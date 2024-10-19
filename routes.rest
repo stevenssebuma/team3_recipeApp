@@ -1,0 +1,62 @@
+// DEVELOPMENT
+### Getall recipe
+GET https://localhost:8080/recipe
+
+### Getsingle recipe
+GET https://localhost:8080/recipe/671218ce486670cb20d5965f
+
+### Create recipe
+POST https://localhost:8080/recipe HTTP/1.1
+content-type: application/json
+
+{
+    "name": "cheese pizza",
+    "ingredients": ["flour", "egg", "tomato", "cheese", "baking soda", "salt"],
+    "servings": 4,
+    "cooking_time": "60 minutes"
+}
+
+### Delete recipe do not use this is only a placehoder, please create a recipe first then use the id of the newly created recipe as the id to delete
+DELETE https://localhost:8080/recipe/671218ce486670cb20d5965f HTTP/1.1  
+
+### Update Recipe
+PUT https://localhost:8080/recipe/671218ce486670cb20d5965f HTTP/1.1
+content-type: application/json
+
+{
+    "name": "Pancakes plus",
+    "ingredients": ["Flour", "Eggs", "Milk", "Baking powder", "Sugar", "Butter", "Salt", "Maple syrup"],
+    "servings": 6,
+    "cooking_time": "30 minutes"
+}
+
+### GetAll user
+GET https://localhost:8080/users
+
+### GetSingle user
+GET https://localhost:8080/users/6713b58081310b07dadf06ca
+
+### Create user
+POST  https://localhost:8080/users HTTP/1.1
+content-type: application/json
+
+{
+    "userName": "faharetana",
+    "email": "test@gmail.com",
+    "password": "descent10"
+}
+
+### Delete user do not use this is only a placehoder, please create a user first then use the id of the newly created recipe as the id to delete
+DELETE  https://localhost:8080/users/6713b58081310b07dadf06ca HTTP/1.1
+
+### Update user
+PUT   https://localhost:8080/users/6713b58081310b07dadf06ca HTTP/1.1
+content-type: application/json
+
+{
+    "userName": "chef2000",
+    "email": "chef2000@gmail.com",
+    "password": "chef2000"
+}
+
+
