@@ -4,8 +4,8 @@ const router = express.Router();
 router.use('/', require('./swagger'));
 
 router.get('/', (req, res) => {
-    //#swagger.tags=['Hello World']
-    res.send('Hello World');
+    //#swagger.tags=['Hope Page']
+    res.render('homePage');
 });
 
 router.use('/users', require('./users'));

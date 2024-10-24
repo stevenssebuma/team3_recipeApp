@@ -15,7 +15,8 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     next();
 });
-
+app.set('view engine', 'ejs')
+app.use(express.static('public'))
 app.use('/', require('./routes')); 
 
 mongodb.initDb((err) => {
