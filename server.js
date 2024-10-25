@@ -1,8 +1,9 @@
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 8080;
-const mongodb = require('./data/database');
-const bodyParser = require('body-parser');
+const mongodb = require('./data/database')
+const MongoStore = require('connect-mongo')
+const bodyParser = require('body-parser')
 
 //require for the OAuth2 security
 require("dotenv").config()
@@ -17,7 +18,11 @@ app.use(bodyParser.json());
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URI,
+        collectionName: 'sessions'
+    })
 }))
 
 app.use(passport.initialize())
