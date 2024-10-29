@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1730193285706" clover="3.2.0">
-  <project timestamp="1730193285706" name="All files">
+<coverage generated="1730225280181" clover="3.2.0">
+  <project timestamp="1730225280182" name="All files">
     <metrics statements="156" coveredstatements="109" conditionals="66" coveredconditionals="25" methods="16" coveredmethods="12" elements="238" coveredelements="146" complexity="0" loc="156" ncloc="156" packages="2" files="3" classes="3"/>
     <package name="controllers">
       <metrics statements="140" coveredstatements="103" conditionals="62" coveredconditionals="25" methods="12" coveredmethods="12"/>
-      <file name="recipe.js" path="D:\coding\cse-341\team3_recipeApp\controllers\recipe.js">
+      <file name="recipe.js" path="C:\Users\Fa\Desktop\Coding and programming\cse341-web-services\team-project\team3_recipeApp\controllers\recipe.js">
         <metrics statements="71" coveredstatements="52" conditionals="32" coveredconditionals="13" methods="6" coveredmethods="6"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -78,7 +78,7 @@
         <line num="142" count="0" type="stmt"/>
         <line num="146" count="1" type="stmt"/>
       </file>
-      <file name="users.js" path="D:\coding\cse-341\team3_recipeApp\controllers\users.js">
+      <file name="users.js" path="C:\Users\Fa\Desktop\Coding and programming\cse341-web-services\team-project\team3_recipeApp\controllers\users.js">
         <metrics statements="69" coveredstatements="51" conditionals="30" coveredconditionals="12" methods="6" coveredmethods="6"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -153,7 +153,7 @@
     </package>
     <package name="data">
       <metrics statements="16" coveredstatements="6" conditionals="4" coveredconditionals="0" methods="4" coveredmethods="0"/>
-      <file name="database.js" path="D:\coding\cse-341\team3_recipeApp\data\database.js">
+      <file name="database.js" path="C:\Users\Fa\Desktop\Coding and programming\cse341-web-services\team-project\team3_recipeApp\data\database.js">
         <metrics statements="16" coveredstatements="6" conditionals="4" coveredconditionals="0" methods="4" coveredmethods="0"/>
         <line num="1" count="2" type="stmt"/>
         <line num="2" count="2" type="stmt"/>
