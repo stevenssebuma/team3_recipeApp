@@ -5,10 +5,9 @@
     "description": "An API to find recipe",
     "version": "1.0.0"
   },
-  "host": "localhost:8080",
+  "host": "team3-recipeapp.onrender.com",
   "basePath": "/",
   "schemes": [
-    "http",
     "https"
   ],
   "paths": {
