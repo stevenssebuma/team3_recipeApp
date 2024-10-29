@@ -8,7 +8,7 @@ router.get("/github/callback",
     passport.authenticate("github", { failureRedirect: "/"}),
     (req, res) => {
         //successful authentication, redirect to recipe page. Could choose to redirect to user or swagger api-docs
-        res.redirect("/recipe")
+        res.redirect("/api-docs")
     }
 )
 

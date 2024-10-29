@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { isAuthenticated } = require('../middleware/authenticate')
+const { checkUser } = require('../middleware/authenticate')
 
 const recipeController = require('../controllers/recipe');
 router.get('/', recipeController.getAll);
 router.get('/:id', recipeController.getSingle);
-router.post('/', isAuthenticated, recipeController.createRecipe);
-router.put('/:id', isAuthenticated, recipeController.updateRecipe);
-router.delete('/:id', isAuthenticated, recipeController.deleteRecipe)
+router.post('/', checkUser, recipeController.createRecipe);
+router.put('/:id', checkUser, recipeController.updateRecipe);
+router.delete('/:id', checkUser, recipeController.deleteRecipe)
 
 module.exports = router;
