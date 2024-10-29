@@ -130,7 +130,7 @@ const deleteUser = async(req, res) => {
         if (response.deletedCount > 0) {
             res.status(204).send();
         } else {
-            res.status(500)(response.error || 'Some error occured while deleting the user.');
+            res.status(500).json({ message: response.error || 'Some error occurred while deleting the user.' });
         }
     } catch (err) {
         console.error('Error deleting user: ' + err.message);

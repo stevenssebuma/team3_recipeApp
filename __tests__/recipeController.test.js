@@ -1,73 +1,151 @@
 const { MongoMemoryServer } = require('mongodb-memory-server');
-const { initDb, getDatabase } = require('../data/database');
+const { MongoClient, ObjectId } = require('mongodb');
+const mongodb = require('../data/database');
 const recipeController = require('../controllers/recipe');
 const httpMocks = require('node-mocks-http');
-const { ObjectId } = require('mongodb');
-
-jest.setTimeout(10000); // Set timeout to 10 seconds for this test file
-
+jest.setTimeout(20000);
 
 let mongoServer;
+let client;
 
 beforeAll(async () => {
     mongoServer = await MongoMemoryServer.create();
     const uri = mongoServer.getUri();
-    await new Promise((resolve, reject) => {
-        initDb((err) => (err ? reject(err) : resolve()), uri);
-    });
-});
-
-afterEach(async () => {
-    const db = getDatabase().db();
-    await db.collection('recipe').deleteMany({});
+    client = await MongoClient.connect(uri, { useNewUrlParser: true });
+    mongodb.getDatabase = jest.fn(() => client); // Mocking getDatabase function
 });
 
 afterAll(async () => {
+    if (client) {
+        await client.close();
+    }
     if (mongoServer) {
         await mongoServer.stop();
     }
 });
 
-describe('Recipe Controller Tests', () => {
-    it('should update an existing recipe', async () => {
-        // Arrange: Insert a test recipe into the in-memory database
-        const db = getDatabase().db();
-        const initialRecipe = {
-            _id: new ObjectId(),
-            name: 'Burger',
-            ingredients: ['bun', 'patty'],
-            servings: 1,
-            cooking_time: '00:10:00',
-        };
-        await db.collection('recipe').insertOne(initialRecipe);
+beforeEach(async () => {
+    const db = client.db();
+    await db.collection('recipe').deleteMany({}); // Clear the collection before each test
+});
+
+describe('Recipe Controller', () => {
+    it('should fetch all recipes', async () => {
+        const req = httpMocks.createRequest({
+            method: 'GET',
+            url: '/recipes',
+            query: {},
+        });
+        const res = httpMocks.createResponse();
+        
+        const db = client.db();
+        await db.collection('recipe').insertMany([
+            { name: "Recipe 1", ingredients: ["ingredient1", "ingredient2"], servings: 2, cooking_time: "10 minutes" },
+            { name: "Recipe 2", ingredients: ["ingredient3", "ingredient4"], servings: 4, cooking_time: "15 minutes" }
+        ]);
+        
+        await recipeController.getAll(req, res);
+        
+        expect(res.statusCode).toBe(200);
+        const data = res._getJSONData();
+        expect(data.length).toBe(2);
+    });
+
+    it('should return a single recipe by ID', async () => {
+        const db = client.db();
+        const insertedRecipe = await db.collection('recipe').insertOne({
+            name: "Test Recipe",
+            ingredients: ["ingredient1", "ingredient2"],
+            servings: 2,
+            cooking_time: "10 minutes"
+        });
 
         const req = httpMocks.createRequest({
-            method: 'PUT',
-            url: `/recipes/${initialRecipe._id}`,
-            params: { id: initialRecipe._id.toString() },
-            body: {
-                name: 'Updated Burger',
-                ingredients: ['bun', 'patty', 'cheese'],
-                servings: 2,
-                cooking_time: '00:15:00',
-            },
+            method: 'GET',
+            url: `/recipes/${insertedRecipe.insertedId}`,
+            params: { id: insertedRecipe.insertedId.toHexString() },
         });
         const res = httpMocks.createResponse();
 
-        // Act: Call the controller's update function
+        await recipeController.getSingle(req, res);
+
+        expect(res.statusCode).toBe(200);
+        const data = res._getJSONData();
+        expect(data[0].name).toBe("Test Recipe");
+    });
+
+    it('should create a new recipe', async () => {
+        const req = httpMocks.createRequest({
+            method: 'POST',
+            url: '/recipes',
+            body: {
+                name: "New Recipe",
+                ingredients: ["ingredient1", "ingredient2"],
+                servings: 4,
+                cooking_time: "20 minutes"
+            }
+        });
+        const res = httpMocks.createResponse();
+
+        await recipeController.createRecipe(req, res);
+
+        expect(res.statusCode).toBe(204);
+        const db = client.db();
+        const recipe = await db.collection('recipe').findOne({ name: "New Recipe" });
+        expect(recipe).toBeTruthy();
+        expect(recipe.servings).toBe(4);
+    });
+
+    it('should update an existing recipe', async () => {
+        const db = client.db();
+        const insertedRecipe = await db.collection('recipe').insertOne({
+            name: "Old Recipe",
+            ingredients: ["ingredient1", "ingredient2"],
+            servings: 2,
+            cooking_time: "10 minutes"
+        });
+
+        const req = httpMocks.createRequest({
+            method: 'PUT',
+            url: `/recipes/${insertedRecipe.insertedId}`,
+            params: { id: insertedRecipe.insertedId.toHexString() },
+            body: {
+                name: "Updated Recipe",
+                ingredients: ["ingredient1", "ingredient3"],
+                servings: 3,
+                cooking_time: "15 minutes"
+            }
+        });
+        const res = httpMocks.createResponse();
+
         await recipeController.updateRecipe(req, res);
 
-        // Assert: Check that the response status is 204 and that the recipe has been updated
         expect(res.statusCode).toBe(204);
+        const updatedRecipe = await db.collection('recipe').findOne({ _id: insertedRecipe.insertedId });
+        expect(updatedRecipe.name).toBe("Updated Recipe");
+        expect(updatedRecipe.servings).toBe(3);
+    });
 
-        const updatedRecipe = await db.collection('recipe').findOne({ _id: initialRecipe._id });
-        expect(updatedRecipe).toEqual(
-            expect.objectContaining({
-                name: 'Updated Burger',
-                ingredients: ['bun', 'patty', 'cheese'],
-                servings: 2,
-                cooking_time: '00:15:00',
-            })
-        );
+    it('should delete an existing recipe', async () => {
+        const db = client.db();
+        const insertedRecipe = await db.collection('recipe').insertOne({
+            name: "Recipe to delete",
+            ingredients: ["ingredient1", "ingredient2"],
+            servings: 2,
+            cooking_time: "10 minutes"
+        });
+
+        const req = httpMocks.createRequest({
+            method: 'DELETE',
+            url: `/recipes/${insertedRecipe.insertedId}`,
+            params: { id: insertedRecipe.insertedId.toHexString() },
+        });
+        const res = httpMocks.createResponse();
+
+        await recipeController.deleteRecipe(req, res);
+
+        expect(res.statusCode).toBe(204);
+        const deletedRecipe = await db.collection('recipe').findOne({ _id: insertedRecipe.insertedId });
+        expect(deletedRecipe).toBeFalsy();
     });
 });
